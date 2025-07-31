@@ -408,7 +408,7 @@ CanvasGroup:
   m_GameObject: {fileID: 298125854}
   m_Enabled: 1
   m_Alpha: 0
-  m_Interactable: 0
+  m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!1 &344959155
@@ -486,6 +486,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _poapMission: {fileID: 585909849}
   _popapChainProgress: {fileID: 1788722886}
+  _prefabUI: {fileID: 3328215546765098926, guid: 86ca8583e6f8acf4eb2ab442783bc1f1, type: 3}
+  _missionCon: {fileID: 1155439441}
+  missionConfigs:
+  - {fileID: 11400000, guid: 3c5c2908387794744af2b06818540a59, type: 2}
+  - {fileID: 11400000, guid: 36d6e67e8a324b24bafd24d41b5d034a, type: 2}
 --- !u!4 &508258973
 Transform:
   m_ObjectHideFlags: 0
