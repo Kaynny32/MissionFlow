@@ -12,6 +12,8 @@ public class MissionItemUI : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI _statusText;
     [SerializeField]
+    TextMeshProUGUI _timerText;
+    [SerializeField]
     Slider _progressBar;
     [SerializeField]
     Image _icon;
@@ -22,11 +24,15 @@ public class MissionItemUI : MonoBehaviour
         ShowCompletedEffect("Notstarted");
     }
 
-    public void UpdateUI(string name, string status, float progress)
+    public void UpdateUI(string name, string status, string timer ,float progress = 0)
     {
         _missionNameText.text = $"Mission name: {name}";
         _statusText.text = $"Status: {status}";
         _progressBar.value = progress;
+        if (timer == "0")
+            _timerText.text = "Timer: null";
+        else
+            _timerText.text =$"Timer: {timer}";
     }
 
     public void ShowCompletedEffect(string status)
