@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -20,6 +21,7 @@ public class UIManager : MonoBehaviour
 
     private Dictionary<MissionConfig, MissionItemUI> _missionUIs = new();
 
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -38,8 +40,7 @@ public class UIManager : MonoBehaviour
         foreach (var config in _missionConfigs)
         {
             var missionUI = Instantiate(_missionPrefab, _missionsContainer)
-                .GetComponent<MissionItemUI>();
-
+                .GetComponent<MissionItemUI>();           
             missionUI.Initialize(config);
             _missionUIs[config] = missionUI;
         }
@@ -51,6 +52,9 @@ public class UIManager : MonoBehaviour
         {
             missionUI.transform.SetParent(_progressContainer);
             missionUI.SetAsActive();
+            missionUI.AddComponent<CollectItemsMission>();
+            missionUI.AddComponent<CollectItemsMission>().StartMission();
+
         }
     }
 }

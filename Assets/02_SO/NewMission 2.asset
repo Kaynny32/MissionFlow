@@ -17,4 +17,4 @@ MonoBehaviour:
   timer: 30
   missionBehaviour: {fileID: 0}
   nextMissions: []
-  startDelay: 0
+  startDelay: 5

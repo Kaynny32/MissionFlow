@@ -42,7 +42,18 @@ public class MissionConfig : ScriptableObject
         }
         else
         {
-            Debug.LogError("Поведение должно реализовывать IMission!");
+            
+        }
+    }
+    public void StartMissionSequence()
+    {
+        if (MissionSequenceManager.Instance != null)
+        {
+            MissionSequenceManager.Instance.StartMissionSequence(this);
+        }
+        else
+        {
+            
         }
     }
 }
