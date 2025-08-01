@@ -1,57 +1,89 @@
-using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class MissionItemUI : MonoBehaviour
 {
-    [SerializeField]
-    TextMeshProUGUI _missionNameText;
-    [SerializeField]
+    [Header("UI References")]
+    [SerializeField] 
+    TextMeshProUGUI _nameText;
+    [SerializeField] 
     TextMeshProUGUI _statusText;
-    [SerializeField]
+    [SerializeField]  
     TextMeshProUGUI _timerText;
-    [SerializeField]
+    [SerializeField]  
     Slider _progressBar;
-    [SerializeField]
+    [SerializeField] 
     Image _icon;
 
+    private MissionConfig _config;
+    private Coroutine _progressRoutine;
 
-    private void Start()
+    public void Initialize(MissionConfig config)
     {
-        ShowCompletedEffect("Notstarted");
+        _config = config;
+        UpdateUI();
+        SetStatus("Notstarted");
     }
 
-    public void UpdateUI(string name, string status, string timer ,float progress = 0)
+    public void SetAsActive()
     {
-        _missionNameText.text = $"Mission name: {name}";
+        SetStatus("InProgress");
+        StartProgress();
+    }
+
+    private void UpdateUI()
+    {
+        _nameText.text = $"Mission: {_config.Name}";
+        _timerText.text = _config.Timer == "0" ? "Timer: null" : $"Timer: {_config.Timer}";
+    }
+
+    private void SetStatus(string status)
+    {
         _statusText.text = $"Status: {status}";
-        _progressBar.value = progress;
-        if (timer == "0")
-            _timerText.text = "Timer: null";
-        else
-            _timerText.text =$"Timer: {timer}";
+
+        _icon.DOKill();
+        var color = status switch
+        {
+            "Notstarted" => Color.red,
+            "InProgress" => Color.yellow,
+            "Completed" => Color.green,
+            _ => Color.white
+        };
+
+        _icon.DOColor(color, 0.5f);
+        _icon.DOFade(0.5f, 0.5f);
     }
 
-    public void ShowCompletedEffect(string status)
+    private void StartProgress()
     {
-        _icon.DOKill();
-        switch (status)
-        {
-            case "Notstarted":
-                _icon.DOFade(0.5f, 1f);
-                _icon.DOColor(Color.red, 0.5f);
-                break;
-            case "InProgress":
-                _icon.DOFade(0.5f, 1f);
-                _icon.DOColor(Color.yellow, 0.5f);
-                break;
-            case "Completed":
-                _icon.DOFade(0.5f, 1f);
-                _icon.DOColor(Color.green, 0.5f);
-                break;
-        }
+        if (_progressRoutine != null)
+            StopCoroutine(_progressRoutine);
+
+        _progressRoutine = StartCoroutine(ProgressRoutine());
     }
+
+    private IEnumerator ProgressRoutine()
+    {
+        if (!float.TryParse(_config.Timer, out var duration))
+        {
+            Debug.LogError("Invalid timer format");
+            yield break;
+        }
+
+        float elapsed = 0;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            _progressBar.value = Mathf.Lerp(0, 1, elapsed / duration);
+            yield return null;
+        }
+
+        _progressBar.value = 1;
+        SetStatus("Completed");
+    }
+
+    public void OnClick() => UIManager.instance.MoveToActive(_config);
 }

@@ -9,7 +9,7 @@ public class MissionConfig : ScriptableObject
     [SerializeField]
     string status;
     [SerializeField]
-    string name;
+    string _name;
     [SerializeField]
     float timer;
 
@@ -25,7 +25,7 @@ public class MissionConfig : ScriptableObject
 
 
     public string Status => status;
-    public string Name => name;
+    public string Name => _name;
     public string Timer =>$"{timer}";
     public IMission MissionImplementation => missionBehaviour as IMission;
     public List<MissionLink> NextMissions => nextMissions;

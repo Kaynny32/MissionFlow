@@ -1,40 +1,56 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("AnimationPopap")]
-    [SerializeField]
-    AnimationPopap _poapMission;
-    [SerializeField]
-    AnimationPopap _popapChainProgress;
+    public static UIManager instance { get; private set; }
 
-    [SerializeField]
-    GameObject _prefabUI;
-    [SerializeField]
-    Transform _missionCon;
+    [Header("UI Elements")]
+    [SerializeField] AnimationPopap _missionPopap;
+    [SerializeField] AnimationPopap _progressPopap;
+    [SerializeField] GameObject _missionPrefab;
 
-    [SerializeField]
-    List<MissionConfig> missionConfigs = new List<MissionConfig>();
+    [Header("Containers")]
+    [SerializeField] Transform _missionsContainer;
+    [SerializeField] Transform _progressContainer;
 
+    [Header("Mission Configs")]
+    [SerializeField] List<MissionConfig> _missionConfigs;
 
-    public async void Start()
+    private Dictionary<MissionConfig, MissionItemUI> _missionUIs = new();
+
+    private void Awake()
     {
-        await UniTask.Delay(1000);
-        _poapMission.AnimationScaleShowAndHidePopap(10f, 735, 3, 1065);
-        _popapChainProgress.AnimationScaleShowAndHidePopap(10f, 735, 3, 1065);
-        SpawnItemUI();
+        if (instance == null) instance = this;
     }
 
-    public void SpawnItemUI()
+    private async void Start()
     {
-        foreach (MissionConfig missionConfig in missionConfigs)
+        await UniTask.Delay(1000);
+        _missionPopap.AnimationScaleShowAndHidePopap(10f, 735, 3, 1065);
+        _progressPopap.AnimationScaleShowAndHidePopap(10f, 735, 3, 1065);
+        InitializeMissions();
+    }
+
+    private void InitializeMissions()
+    {
+        foreach (var config in _missionConfigs)
         {
-            GameObject clone = Instantiate(_prefabUI, _missionCon);
-            clone.GetComponent<MissionItemUI>().UpdateUI(missionConfig.Name, missionConfig.Status, missionConfig.Timer);
+            var missionUI = Instantiate(_missionPrefab, _missionsContainer)
+                .GetComponent<MissionItemUI>();
+
+            missionUI.Initialize(config);
+            _missionUIs[config] = missionUI;
+        }
+    }
+
+    public void MoveToActive(MissionConfig config)
+    {
+        if (_missionUIs.TryGetValue(config, out var missionUI))
+        {
+            missionUI.transform.SetParent(_progressContainer);
+            missionUI.SetAsActive();
         }
     }
 }
